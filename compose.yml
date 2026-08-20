@@ -1,21 +1,39 @@
 services:
-  web:
-    image: nginx:latest
-    container_name: compose-web
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: frontend-container
     ports:
       - "8082:80"
-    volumes:
-      - ./index.html:/usr/share/nginx/html/index.html
+    depends_on:
+      - backend
     networks:
-      - my-network
+      - docker-network
 
-  app:
-    image: node:20
-    container_name: compose-node
-    command: node -e "console.log('Node.js application running inside Docker Compose')"
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend-container
+    ports:
+      - "3000:3000"
+    depends_on:
+      - database
     networks:
-      - my-network
+      - docker-network
+
+  database:
+    image: mongo:latest
+    container_name: mongo-container
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - docker-network
+
+volumes:
+  mongo-data:
 
 networks:
-  my-network:
+  docker-network:
     driver: bridge
