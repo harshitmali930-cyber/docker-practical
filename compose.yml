@@ -1,0 +1,21 @@
+services:
+  web:
+    image: nginx:latest
+    container_name: compose-web
+    ports:
+      - "8082:80"
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html
+    networks:
+      - my-network
+
+  app:
+    image: node:20
+    container_name: compose-node
+    command: node -e "console.log('Node.js application running inside Docker Compose')"
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge
